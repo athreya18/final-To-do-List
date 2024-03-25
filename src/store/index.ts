@@ -52,7 +52,7 @@ export const useTaskList = create(
       deleteAlltasks:() =>{
         set((state: any) => ({
           createdTasks: state.createdTasks.filter(
-            (task: any) => task.status !== "completed"
+            (task: any) => task.status === "completed"
           ),
         }));
       }
