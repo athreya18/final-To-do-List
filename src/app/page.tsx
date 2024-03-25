@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import iconimg from "../components/images/Group-1.svg";
 import john from "../components/images/john.svg";
 import list from "../components/images/list.svg";
-import newtask from "../components/images/newtask.svg"
 import ss from "../components/images/ss.svg";
 import axios from 'axios';
 import { createNewTask } from "@/helper/utils";
@@ -28,7 +27,6 @@ export default function Home() {
   };
 
   const closeSheet = () => {
-    
     setIsSheetOpen(false);
     setSelectedTaskIndex(0);
     setTitle('');
@@ -37,21 +35,13 @@ export default function Home() {
 
   const onSave = async () => {
     const resp:any = await createNewTask(title, desc);
+      updateTask(resp.data.id, resp.data.title, resp.data.description, false, resp.data.status)
     if(resp && resp.data) {
       createTask();
       closeSheet();
     }
-  }
-
-  const editTask = (index: number) => {
-    setSelectedTaskIndex(index);
-    setTitle(tasks[index].title);
-    setDesc(tasks[index].desc);
-    openSheet();
-  };
-  
-  const createTask = (): void => {
-
+  }  
+  const createTask = (): void => { 
     setTasks([...tasks, { title , desc }]);
     setTitle('');
     setDesc('');
@@ -59,7 +49,6 @@ export default function Home() {
 
   const fetchTask = async()=>{
     try{
-
       const response=await axios.get('http://localhost:3001/api/todos/');
       console.log({response})
       allTask(response.data)
@@ -94,8 +83,8 @@ export default function Home() {
   </div>
   <div className="w-56 h-5 ml-20 ">
     <p className=" ml-8 font-['Urbanist'] text-base font-medium leading-19 tracking-normal text-gray-500">Create tasks to achieve more.</p>
-  </div>
-   
+ </div>
+  
     {/* Image */}
     {createdTasks.length == 0 && <div className="flex flex-row justify-center items-center">
     <Image src={list} width={148} height={144} alt="" className="mt-20"></Image>
@@ -109,16 +98,16 @@ export default function Home() {
       <SheetContent>
         <SheetHeader>
           <SheetTitle>
-            <h2>Create Task</h2>
-            <h3 className=" p-4 mt-1 font=['Urbanist'] text-sm font-medium leading-17 tracking-normal text-left text-indigo-800 w-27 h-17">Title</h3>
-            <Input type="text"  placeholder="Enter text.. " onChange={(e) => {setTitle(e.target.value)}}/>
+            <h2 className="font-['Urbanist'] text-black text-base font-semibold leading-6 text-left">Create Task</h2>
+            <h3 className=" text-rgba-63-61-86 font-['Urbanist'] text-sm font-medium leading-4.5 text-left w-27 h-17">Title</h3>
+            <Input type="text" className=" font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86 h-17" placeholder="Enter text.. " onChange={(e) => {setTitle(e.target.value)}}/>
 
-            <h3 className=" mt-3 font=['Urbanist'] text-sm font-medium leading-17 tracking-normal text-left text-indigo-800 w-27 h-17">Description</h3>
-            <Input type="text" placeholder="Enter Description.." className="w-96 h-56" onChange={(e) => {setDesc(e.target.value)}}/>
+            <h3  className=" w-70 h-17 font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86">Description</h3>
+            <Input type="text" placeholder="Enter Description.." className="font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86 h-56" onChange={(e) => {setDesc(e.target.value)}}/>
           </SheetTitle>
           <SheetDescription>
             <div>
-              <h3 className=" mt-3 font=['Urbanist'] text-sm font-medium leading-17 tracking-normal text-left text-indigo-800 w-27 h-17">Upload Screenshot</h3>
+              <h3 className=" w-70 h-17 font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86">Upload Screenshot</h3>
               <div className="w-32 h-32  rounded-md border-dotted border-1 border-black flex flex-row items-center justify-center">
                 <Image src={ss} width={20} height={20} alt=""></Image>
               </div>
@@ -127,12 +116,11 @@ export default function Home() {
               <Button variant="outline" className="w-[45%] h-12 font=['Urbanist'] p-5  rounded-12 border-1 border-solid  border-black gap-3 flex flex-row justify-center items-center " onClick={closeSheet}>Cancel</Button>
               <Button variant="outline" className="w-[45%] h-12 font=['Urbanist']  p-5 rounded-12 border-1 border-solid border-black gap-3 flex flex-row justify-center items-center bg-blue-500 bg-opacity-10 text-blue-600" onClick={onSave} >+ Create Task</Button>
             </div>
-            
           </SheetDescription>
         </SheetHeader>
       </SheetContent>
     </Sheet>
-    
+
     <Todos />
     </div>
 </>
