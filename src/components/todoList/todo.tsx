@@ -51,10 +51,10 @@ const Todos = (props: any) => {
         setDesc('');
     };
 
-    const update = async (id: number) => {
+    const update = async (id: number, selectedTitle = "", selectedDes = "") => {
         console.log({ id })
         try {
-            const resp = await axios.put(`http://localhost:3001/api/todos/${id}`, { title: title, description: desc,status:"todo" });
+            const resp = await axios.put(`http://localhost:3001/api/todos/${id}`, { title: selectedTitle || title, description: selectedDes ||  desc,status: selectedDes ? "completed" : "todo" });
             // updateTask(title, desc);
             if (resp) {
                 const finalRes = createdTasks.map((res: TaskList) => {
@@ -71,7 +71,7 @@ const Todos = (props: any) => {
                         return res
                     }
                 })
-
+                
                 console.log({finalRes})
                 allTask(finalRes)
             }
@@ -110,7 +110,7 @@ const Todos = (props: any) => {
         try {
             const resp = await axios.delete('http://localhost:3001/api/todos');
             if (resp.status === 200 ) {
-                deleteAlltasks();
+                allTask(resp.data)
             } else {
                 console.error('Failed to delete all tasks');
             }
@@ -190,6 +190,7 @@ const Todos = (props: any) => {
                                                         setIsCheckboxChecked(!isCheckboxChecked);
                                                         task.status="completed";
                                                         editTodoTasks(task.id, task.title, task.description, !task.showEdit,task.status)
+                                                        update(task.id, task.title, task.description);
             
                                                     }} />
                                                     <Label htmlFor={`checkbox-${index}`}></Label>
@@ -222,12 +223,12 @@ const Todos = (props: any) => {
                     }
                         
                         )}
-                    </div>
+                    </div >
 
                     {/* Completed Tasks */}
                     <h3 className='pt-7 ml-20 pl-20 flex flex-row justify-start items-start font-bold font-[Urbanist]'>Completed Tasks</h3>
                     <div className='flex flex-row justify-end align-end mr-40'>
-                    <Image src={deleteall} alt="" onClick={() => { deleteCompletedtasks }} width={91} height={30} className=" rounded-l-8 px-3 py-1"></Image>
+                    <Image src={deleteall} alt="" onClick={() => { deleteCompletedtasks() }} width={91} height={30} className=" rounded-l-8 px-3 py-1"></Image>
                     </div>
                     <div className="flex flex-col items-center justify-center">
                         {createdTasks.map((task: TaskList, index: number) => {
