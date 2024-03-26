@@ -68,7 +68,7 @@ const Todos = (props: any) => {
                             status:resp.data.status,
                         }
                     } else {
-                        return res
+                        return resp
                     }
                 })
                 
@@ -111,19 +111,20 @@ const Todos = (props: any) => {
             const resp = await axios.delete('http://localhost:3001/api/todos');
             if (resp.status === 200 ) {
                 allTask(resp.data)
-            } else {
+            } else 
+            {
                 console.error('Failed to delete all tasks');
             }
         } catch (error) {
             console.error('Error deleting all tasks:', error);
         }
     };
+
     const editTasks = (index: number) => {
         setSelectedTaskIndex(index);
         setDesc(createdTasks[index].description);
         setTitle(createdTasks[index].title);
         setSelectedTaskId(null);
-
     };
 
     console.log({ createdTasks })
@@ -146,9 +147,9 @@ const Todos = (props: any) => {
                                             onMouseLeave={() => setHoveredTaskIndex(null)}>
                                             {hoveredTaskIndex === index && (
                                                 <>
-                                                    {/* Delete */}
                                                     <Dialog>
                                                         <DialogTrigger>
+                    {/*  EDIT  */}
                                                             <Image src={editimg} alt="" onClick={() => { editTasks(index) }} width={28} height={28} className="absolute top-10 right-12 cursor-pointer"></Image>
                                                         </DialogTrigger>
                                                         <DialogContent className="sm:max-w-[425px]">
@@ -180,16 +181,17 @@ const Todos = (props: any) => {
                                                             </DialogClose>
                                                         </DialogContent>
                                                     </Dialog>
+                    {/* DELETE */}
                                                     <Image src={deleteimg} alt="" onClick={() => { deleteTaskHandler(task.id) }} width={28} height={28} className="absolute top-10 right-3 cursor-pointer"></Image>
-                                                    {/* Edit */}
                                                 </>
                                             )}
                                             <div className='absolute flex flex-row justify-start self-start left-5 top-8'>
                                                 <div className="">
+                    {/*CHECKBOXX */}
                                                     <Checkbox id={`checkbox-${index}`} checked={task.showEdit} onCheckedChange={() => {
                                                         setIsCheckboxChecked(!isCheckboxChecked);
                                                         task.status="completed";
-                                                        editTodoTasks(task.id, task.title, task.description, !task.showEdit,task.status)
+                                                        editTodoTasks(task.id, task.title, task.description,!task.showEdit,task.status)
                                                         update(task.id, task.title, task.description);
             
                                                     }} />
@@ -197,7 +199,7 @@ const Todos = (props: any) => {
                                                 </div>
                                             </div>
                                             <div className={`absolute left-20 ${task.showEdit ? 'line-through' : ''}`}>
-
+                                                    
                                                 <p onClick={() => {
                                                     if (selectedTaskId === task.id) {
                                                         setSelectedTaskId(null); 
@@ -218,16 +220,15 @@ const Todos = (props: any) => {
                         : <>
                         <p></p>
                         </>
-                    
                     )
                     }
-                        
                         )}
                     </div >
 
-                    {/* Completed Tasks */}
+        {/* COMPLETED TASKS */}
                     <h3 className='pt-7 ml-20 pl-20 flex flex-row justify-start items-start font-bold font-[Urbanist]'>Completed Tasks</h3>
                     <div className='flex flex-row justify-end align-end mr-40'>
+        {/* DELETE ALL */}
                     <Image src={deleteall} alt="" onClick={() => { deleteCompletedtasks() }} width={91} height={30} className=" rounded-l-8 px-3 py-1"></Image>
                     </div>
                     <div className="flex flex-col items-center justify-center">
@@ -237,8 +238,8 @@ const Todos = (props: any) => {
                                 return (
                                     <div key={index} className='mt-5 bg-[rgba(245,247,249,1)] bg-opacity-100 flex flex-col justify-center items-center w-3/4 h-28 rounded-2xl relative'>
                                         <div className={`absolute left-20 ${task.showEdit ? 'line-through' : ''}`}>
-                                            <p className='flex flex-row justify-center items-start font-bold '>{task.title}</p>
-                                            <p className='pl-3 flex flex-row justify-center items-start text-rgba-141-156-184-1'>{task.description}</p>
+                                            <p className='relative bottom-3 font-bold font-[Urbanist]'>{task.title}</p>
+                                            <p className='relative bottom-2 text-rgba-141-156-184-1 font-[Urbanist]'>{task.description}</p>
                                         </div>
                                         <Image src={trash} alt="" onClick={() => { deleteTaskHandler(task.id) }} width={30} height={30} className="absolute right-5 cursor-pointer"></Image>
                                     </div>
@@ -248,7 +249,6 @@ const Todos = (props: any) => {
                             }
                         })}
                     </div>
-
                 </>
             )}
             <Sheet open={isSheetOpen}>
