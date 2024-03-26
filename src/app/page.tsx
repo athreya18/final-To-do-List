@@ -36,9 +36,9 @@ export default function Home() {
   const onSave = async () => {
     const resp:any = await createNewTask(title, desc);
       updateTask(resp.data.id, resp.data.title, resp.data.description, false, resp.data.status)
-    if(resp && resp.data) {
-      createTask();
-      closeSheet();
+      if(resp && resp.data) {
+        createTask();
+        closeSheet();
     }
   }  
   const createTask = (): void => { 
