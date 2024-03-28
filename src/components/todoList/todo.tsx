@@ -23,20 +23,21 @@ type TaskList = {
     description: string;
     showEdit: boolean;
     status: string;
-
 };
+var count=0;
 
 const Todos = (props: any) => {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [tasks, setTasks] = useState<Array<{ title: string, desc: string }>>([]);
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0);
-    const { updateTask, createdTasks, deleteTask, editTodoTasks, allTask ,deleteAlltasks}: any = useTaskList();
+    const { updateTask, createdTasks, deleteTask, editTodoTasks, allTask, deleteAlltasks }: any = useTaskList();
     const [title, setTitle] = useState<string>("");
     const [desc, setDesc] = useState<string>("");
     const [isCheckboxChecked, setIsCheckboxChecked] = useState<boolean>(false);
     const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
     const [hoveredTaskIndex, setHoveredTaskIndex] = useState<number | null>(null);
     const [completedTasks, setCompletedTasks] = useState<TaskList[]>([]);
+    const [showCompletedTasks, setShowCompletedTasks] = useState<boolean>(false);
 
     const openSheet = () => {
         setIsSheetOpen(true);
@@ -51,10 +52,17 @@ const Todos = (props: any) => {
         setDesc('');
     };
 
+    const handleCheckboxChange = () => {
+        setIsCheckboxChecked(!isCheckboxChecked);
+        setShowCompletedTasks(true);
+    };
+
+
+
     const update = async (id: number, selectedTitle = "", selectedDes = "") => {
         console.log({ id })
         try {
-            const resp = await axios.put(`http://localhost:3001/api/todos/${id}`, { title: selectedTitle || title, description: selectedDes ||  desc,status: selectedDes ? "completed" : "todo" });
+            const resp = await axios.put(`http://localhost:3001/api/todos/${id}`, { title: selectedTitle || title, description: selectedDes || desc, status: selectedDes ? "completed" : "todo" });
             // updateTask(title, desc);
             if (resp) {
                 const finalRes = createdTasks.map((res: TaskList) => {
@@ -65,14 +73,14 @@ const Todos = (props: any) => {
                             title: resp.data.title,
                             description: resp.data.description,
                             showEdit: false,
-                            status:resp.data.status,
+                            status: resp.data.status,
                         }
                     } else {
-                        return resp
+                        return res
                     }
                 })
-                
-                console.log({finalRes})
+
+                console.log({ finalRes })
                 allTask(finalRes)
             }
             setIsCheckboxChecked(false);
@@ -90,6 +98,8 @@ const Todos = (props: any) => {
             setTitle('');
             setDesc('');
             closeSheet();
+            count=count+1;
+            console.log(count)
 
         } catch (error) {
             console.error('Error creating task:', error);
@@ -104,15 +114,17 @@ const Todos = (props: any) => {
             console.error('Error deleting task:', error);
         }
         setSelectedTaskId(null);
+        count=count-1;
+        console.log(count)
     };
 
-    const deleteCompletedtasks= async () =>{
+    const deleteCompletedtasks = async () => {
         try {
             const resp = await axios.delete('http://localhost:3001/api/todos');
-            if (resp.status === 200 ) {
+            if (resp.status === 200) {
                 allTask(resp.data)
-            } else 
-            {
+                setShowCompletedTasks(false);
+            } else {
                 console.error('Failed to delete all tasks');
             }
         } catch (error) {
@@ -124,23 +136,24 @@ const Todos = (props: any) => {
         setSelectedTaskIndex(index);
         setDesc(createdTasks[index].description);
         setTitle(createdTasks[index].title);
+        // editTodoTasks(index)
         setSelectedTaskId(null);
     };
 
     console.log({ createdTasks })
     return (
         <div>
-        {createdTasks.length !== 0 && (
-            <>
+            {createdTasks.length !== 0 && (
+                <>
                     <h3 className=' ml-20 flex flex-row justify-center items-center font-bold font-[Urbanist]'>Created Tasks</h3>
                     <p className='ml-20 text-gray-500 flex flex-row justify-center items-center font-[Urbanist]'>{`You have ${createdTasks.length} task${createdTasks.length !== 1 ? 's' : ''} to do`}</p>
                     <div className="flex flex-col items-center justify-center ">
                         <Image src={newtask} alt="" onClick={openSheet} width={182} height={10} className="ml-32 self-start flex flew-row hover:bg-rgba-121-136-164-1 " ></Image>
                         {createdTasks.length !== 0 && createdTasks.map((task: TaskList, index: number) => {
-                            console.log({task})
+                            console.log({ task })
                             return (
-                            
-                            (task.status === "todo") ?
+
+                                (task.status === "todo") ?
                                     <>
                                         {/* {task.status === "todo" ? <p>todo</p> : <p>completed</p>} */}
                                         <div key={index} className='mt-5 bg-[rgba(245,247,249,1)] bg-opacity-100 flex flex-col justify-center items-center w-3/4 h-28 rounded-2xl relative' onMouseEnter={() => setHoveredTaskIndex(index)}
@@ -149,7 +162,7 @@ const Todos = (props: any) => {
                                                 <>
                                                     <Dialog>
                                                         <DialogTrigger>
-                    {/*  EDIT  */}
+                                                            {/*  EDIT  */}
                                                             <Image src={editimg} alt="" onClick={() => { editTasks(index) }} width={28} height={28} className="absolute top-10 right-12 cursor-pointer"></Image>
                                                         </DialogTrigger>
                                                         <DialogContent className="sm:max-w-[425px]">
@@ -181,30 +194,31 @@ const Todos = (props: any) => {
                                                             </DialogClose>
                                                         </DialogContent>
                                                     </Dialog>
-                    {/* DELETE */}
+                                                    {/* DELETE */}
                                                     <Image src={deleteimg} alt="" onClick={() => { deleteTaskHandler(task.id) }} width={28} height={28} className="absolute top-10 right-3 cursor-pointer"></Image>
                                                 </>
                                             )}
                                             <div className='absolute flex flex-row justify-start self-start left-5 top-8'>
                                                 <div className="">
-                    {/*CHECKBOXX */}
+                                                    {/*CHECKBOXX */}
                                                     <Checkbox id={`checkbox-${index}`} checked={task.showEdit} onCheckedChange={() => {
                                                         setIsCheckboxChecked(!isCheckboxChecked);
-                                                        task.status="completed";
-                                                        editTodoTasks(task.id, task.title, task.description,!task.showEdit,task.status)
+                                                        task.status = "completed";
+                                                        editTodoTasks(task.id, task.title, task.description, !task.showEdit, task.status)
                                                         update(task.id, task.title, task.description);
-            
+                                                        setShowCompletedTasks(true);
+
                                                     }} />
                                                     <Label htmlFor={`checkbox-${index}`}></Label>
                                                 </div>
                                             </div>
                                             <div className={`absolute left-20 ${task.showEdit ? 'line-through' : ''}`}>
-                                                    
+
                                                 <p onClick={() => {
                                                     if (selectedTaskId === task.id) {
-                                                        setSelectedTaskId(null); 
+                                                        setSelectedTaskId(null);
                                                     } else {
-                                                        setSelectedTaskId(task.id); 
+                                                        setSelectedTaskId(task.id);
                                                     }
                                                 }} className='relative bottom-3 font-bold font-[Urbanist] '>
                                                     {task.title}
@@ -214,30 +228,32 @@ const Todos = (props: any) => {
                                                 )}
                                             </div>
                                         </div>
-
-
                                     </>
-                        : <>
-                        <p></p>
-                        </>
-                    )
-                    }
+                                    : <>
+                                        <p></p>
+                                    </>
+                            )
+                        }
                         )}
                     </div >
 
-        {/* COMPLETED TASKS */}
-                    <h3 className='pt-7 ml-20 pl-20 flex flex-row justify-start items-start font-bold font-[Urbanist]'>Completed Tasks</h3>
-                    <div className='flex flex-row justify-end align-end mr-40'>
-        {/* DELETE ALL */}
-                    <Image src={deleteall} alt="" onClick={() => { deleteCompletedtasks() }} width={91} height={30} className=" rounded-l-8 px-3 py-1"></Image>
-                    </div>
+                    {/* COMPLETED TASKS */}
+                    
+                    {showCompletedTasks && (
+                        <div>
+                            <h3 className='pt-7 ml-20 pl-20 flex flex-row justify-start items-start font-bold font-[Urbanist]'>Completed Tasks</h3>
+                            <div className='flex flex-row justify-end align-end mr-40'>
+                                {/* DELETE ALL */}
+                                <Image src={deleteall} alt="" onClick={() => { deleteCompletedtasks() }} width={91} height={30} className=" rounded-l-8 px-3 py-1"></Image>
+                            </div>
+                        </div>)}
                     <div className="flex flex-col items-center justify-center">
                         {createdTasks.map((task: TaskList, index: number) => {
-                            if (task.status === "completed") { 
+                            if (task.status === "completed") {
                                 console.log("123456789")
                                 return (
                                     <div key={index} className='mt-5 bg-[rgba(245,247,249,1)] bg-opacity-100 flex flex-col justify-center items-center w-3/4 h-28 rounded-2xl relative'>
-                                        <div className={`absolute left-20 ${task.showEdit ? 'line-through' : ''}`}>
+                                        <div className={`absolute left-20 line-through`}>
                                             <p className='relative bottom-3 font-bold font-[Urbanist]'>{task.title}</p>
                                             <p className='relative bottom-2 text-rgba-141-156-184-1 font-[Urbanist]'>{task.description}</p>
                                         </div>
@@ -245,7 +261,7 @@ const Todos = (props: any) => {
                                     </div>
                                 );
                             } else {
-                                return null; 
+                                return null;
                             }
                         })}
                     </div>
@@ -278,9 +294,7 @@ const Todos = (props: any) => {
                     </SheetHeader>
                 </SheetContent>
             </Sheet>
-
         </div>
-
     );
 }
 
