@@ -101,7 +101,6 @@ export default function Home() {
             <h2 className="font-['Urbanist'] text-black text-base font-semibold leading-6 text-left">Create Task</h2>
             <h3 className=" text-rgba-63-61-86 font-['Urbanist'] text-sm font-medium leading-4.5 text-left w-27 h-17">Title</h3>
             <Input type="text" className=" font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86 h-17" placeholder="Enter text.. " onChange={(e) => {setTitle(e.target.value)}}/>
-
             <h3  className=" w-70 h-17 font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86">Description</h3>
             <Input type="text" placeholder="Enter Description.." className="font-['Urbanist'] text-sm font-medium leading-4.5 text-left text-rgba-63-61-86 h-56" onChange={(e) => {setDesc(e.target.value)}}/>
           </SheetTitle>
